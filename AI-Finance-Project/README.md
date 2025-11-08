@@ -44,23 +44,3 @@ This project combines two different AI models to give both a short-term and long
 * **Visualization:** `plotly`
 
 ---
-
-## 🚀 How to Run
-
-Follow these steps to run the project on your local machine.
-
-### 1. Get Your Free API Key
-This app requires a free API key from Finnhub to fetch news.
-1.  Go to **[finnhub.io](https://finnhub.io/)** and sign up for a free account.
-2.  Copy your API key.
-3.  Paste the key into `app.py` in the `FINNHUB_API_KEY` variable.
-
-### 2. Set Up Your Environment
-```bash
-# Clone this repository (or download the files)
-git clone [Your-GitHub-Repo-URL]
-cd AI-Stock-Crypto-Analyzer
-
-# Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
