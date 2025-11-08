@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 st.set_page_config(page_title="AI Stock & Crypto Analyzer", page_icon="🚀", layout="wide")
 
 # --- API Key ---
-FINNHUB_API_KEY = "YOUR_FINNHUB_API_KEY_HERE"  # <-- PASTE YOUR KEY HERE
+FINNHUB_API_KEY = "d47j8s9r01qtk51qd12gd47j8s9r01qtk51qd130"  # <-- PASTE YOUR KEY HERE
 finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
 
 # --- STOCK/CRYPTO HELPER FUNCTIONS ---
@@ -402,4 +402,5 @@ st.caption("""
 © 2025 Nishad Raval. All Rights Reserved.  
 This is an educational portfolio project. The information and AI predictions provided are for informational purposes only and **do not constitute financial advice**.  
 This application does not collect, store, or share any personal user data.
+
 """)
