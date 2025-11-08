@@ -8,8 +8,6 @@ This project combines two different AI models to give both a short-term and long
 
 ## 📸 App Screenshots
 
-*(Note: Just make sure your screenshot files are named `desktop-view.png` and `mobile-view.png` and are in the same folder as this file!)*
-
 | Desktop View | Mobile View |
 | :---: | :---: |
 | ![AI Stock Analyzer Desktop View](AI-Stock.png) | ![AI Stock Analyzer Mobile View](AIstock.png) |
@@ -64,4 +62,5 @@ cd aistock
 
 # Create and activate a virtual environment
 python -m venv venv
+
 source venv/bin/activate  # On Windows: venv\Scripts\activate
