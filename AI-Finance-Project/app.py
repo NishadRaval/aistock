@@ -1,6 +1,6 @@
 import streamlit as st
 import yfinance as yf
-import finnhub  # Finnhub import
+import finnhub
 import pandas as pd
 import numpy as np
 import plotly.express as px
@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 st.set_page_config(page_title="AI Stock & Crypto Analyzer", page_icon="🚀", layout="wide")
 
 # --- API Key ---
-FINNHUB_API_KEY = "d47j8s9r01qtk51qd12gd47j8s9r01qtk51qd130"  # <-- PASTE YOUR KEY HERE
+FINNHUB_API_KEY = "d47j8s9r01qtk51qd12gd47j8s9r01qtk51qd130"
 finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
 
 # --- STOCK/CRYPTO HELPER FUNCTIONS ---
@@ -28,10 +28,7 @@ def calculate_rsi(data, window=14):
 
 @st.cache_data(ttl="1h") 
 def get_fundamental_score(info):
-    """
-    Calculates a comprehensive 'Long-Term Quality Score' (out of 7) 
-    and returns a structured list of reasons.
-    """
+    # ... (function content is the same) ...
     score = 0
     reasons = [] 
     
@@ -139,7 +136,7 @@ def generate_long_term_summary(score, total_possible):
     if score_percentage >= 0.8:
         rating = "Long-Term Buy 🟢"
         summary = (
-            "**AI Analysis:** Based on **excellent fundamental health**, this company appears to be a strong candidate for a long-term (6+ months) 'Buy' position. "
+            "**AI Analysis:** Based on **excellent fundamental health**, this company appears to be a strong candidate for a long-term (12+ months) 'Buy' position. "
             "It shows signs of profitability, efficiency, and financial stability."
         )
     elif score_percentage >= 0.4:
@@ -163,7 +160,6 @@ def generate_long_term_summary(score, total_possible):
 def fetch_stock_data(symbol):
     """Fetches historical data and company info from yfinance."""
     ticker = yf.Ticker(symbol)
-    # --- REVERT: Back to 1 year of data (This is FAST) ---
     hist_df = ticker.history(period="1y")
     info = ticker.info
     if hist_df.empty: 
@@ -177,7 +173,6 @@ def fetch_finnhub_news(symbol):
         if FINNHUB_API_KEY == "YOUR_FINNHUB_API_KEY_HERE":
             return [{"headline": "Please add your Finnhub API key to the code to see news.", "source": "App", "url": "https://finnhub.io/"}]
         
-        # Get today and yesterday's date
         today = datetime.now().strftime('%Y-%m-%d')
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
         
@@ -185,9 +180,8 @@ def fetch_finnhub_news(symbol):
         news = finnhub_client.company_news(symbol, _from=yesterday, to=today)
         return news
     except Exception as e:
-        # Fails silently for the user
         print(f"Silent Error fetching news: {e}") 
-        return [] # Just return an empty list.
+        return []
 
 def calculate_technical_indicators(df):
     """Calculates MAs, RSI, and Volume."""
@@ -206,7 +200,6 @@ def calculate_technical_indicators(df):
     df_processed = df.dropna()
     return df_processed, df.iloc[[-1]] # Return processed data AND the last row
 
-# --- REVERT: Back to the original, stable RandomForest model ---
 @st.cache_data(ttl="1.h")
 def create_model(df):
     """
@@ -242,12 +235,12 @@ def create_model(df):
         
     split_index = int(len(X) * 0.8)
     X_train, X_test = X.iloc[:split_index], X.iloc[split_index:]
-    y_train, y_test = y.iloc[:split_index], y.iloc[split_index:] # This line is correct
+    y_train, y_test = y.iloc[:split_index], y.iloc[split_index:]
     
     if len(X_test) == 0: 
         return None, "Not enough test data."
         
-    # --- Simple, default RandomForest (This is FAST) ---
+    # Simple, default RandomForest
     model = RandomForestClassifier(
         n_estimators=100, 
         random_state=42
@@ -272,11 +265,11 @@ st.write("Analyzes Indian (NSE/BSE), US, and Crypto tickers.")
 
 st.header("Stock / Crypto Analyzer")
 stock_symbol = st.text_input(
-    "Enter a symbol (e.g., AAPL, INFY.NS, RELIANCE.NS, BTC-USD)", 
+    # --- FIX: Input filter guidance ---
+    "Enter a symbol (e.g., AAPL, RELIANCE.NS, BTC-USD)", 
     "RELIANCE.NS"
 ).upper()
 
-# --- REVERT: Updated spinner text to be accurate (1 year) ---
 if st.button("Analyze & Predict"):
     with st.spinner(f"Analyzing {stock_symbol} (using 1 year of data)..."):
         try:
@@ -317,17 +310,17 @@ if st.button("Analyze & Predict"):
                 #
                 st.header(f"Analysis for {info.get('longName', stock_symbol)}")
                 
-                # --- Row 1: Key Metrics (HONEST VERSION - NO ACCURACY) ---
+                # --- Row 1: Key Metrics (HONEST VERSION) ---
                 with st.container(border=True):
                     st.subheader("Key Metrics & Predictions")
-                    cols = st.columns(3) # 3 columns
+                    cols = st.columns(3)
                     cols[0].metric("AI Prediction (5-Day)", prediction_text, help="A short-term technical guess based on 1-year of data.")
                     cols[1].metric("Long-Term Score", f"{score} / {total_possible}", help="A fundamental score for Value, Profitability, and Health.")
                     cols[2].metric("P/E Ratio", pe_text, help="Price-to-Earnings Ratio (Value)")
 
                 # --- Row 2: Long-Term Recommendation ---
                 with st.container(border=True):
-                    st.subheader("Long-Term AI Recommendation (3-6+ Months)")
+                    st.subheader("Long-Term AI Recommendation (12+ Months)") # --- FIX: Long-term label ---
                     st.warning("⚠️ **Disclaimer:** This is an AI-generated analysis based *only* on fundamental data. It is **not** financial advice. This is an educational tool for research.")
                     
                     col1_summ, col2_summ = st.columns([1, 2])
@@ -339,16 +332,18 @@ if st.button("Analyze & Predict"):
                 # --- Row 3: Chart & News ---
                 with st.container(border=True):
                     col1_chart, col2_news = st.columns([2, 1])
+
                     with col1_chart:
-                        # --- REVERT: Back to 1 Year Chart ---
+                        # --- FIX: Chart Y-axis Label ---
                         st.subheader("Price Chart (Last 1 Year)")
                         fig = px.line(hist_df, y='Close', title=f'{stock_symbol} Closing Price')
+                        fig.update_layout(yaxis_title='Price (INR/USD)') # Labeling axis
                         st.plotly_chart(fig, use_container_width=True)
 
                     with col2_news:
                         st.subheader("Recent News")
                         if news:
-                            for item in news[:5]: # Show top 5 news items
+                            for item in news[:5]:
                                 title = item.get('headline', 'No Title Available')
                                 source = item.get('source', 'No Source')
                                 link = item.get('url', None)
@@ -391,16 +386,3 @@ if st.button("Analyze & Predict"):
         
         except Exception as e:
             st.error(f"An error occurred: {e}")
-
-# --- ============================= ---
-# ---           FOOTER              ---
-# --- ============================= ---
-
-st.divider()
-
-st.caption("""
-© 2025 Nishad Raval. All Rights Reserved.  
-This is an educational portfolio project. The information and AI predictions provided are for informational purposes only and **do not constitute financial advice**.  
-This application does not collect, store, or share any personal user data.
-
-""")
